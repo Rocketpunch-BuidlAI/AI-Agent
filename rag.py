@@ -33,16 +33,15 @@ if not pc.has_index(index_name):
 
 
 # 1. Embed and Upload Resumes to Pinecone
-def load_resumes_to_pinecone(folder_path="coverletters/"):
+def load_resumes_to_pinecone(
+    coverletter: str,
+    metadata: dict,
+):
     documents = []
-    for filename in os.listdir(folder_path):
-        with open(os.path.join(folder_path, filename), "r") as f:
-            content = f.read()
-            metadata = {
-                "source": filename,
-                "company": "Google" if "google" in filename else "Other",
-            }
-            documents.append(Document(page_content=content, metadata=metadata))
+
+    documents.append(
+        Document(page_content=coverletter, metadata={"source": "user_coverletter", **metadata})
+    )
 
     # Split and embed
     text_splitter = RecursiveCharacterTextSplitter(
@@ -55,6 +54,7 @@ def load_resumes_to_pinecone(folder_path="coverletters/"):
         index_name=index_name,
         embedding=embeddings,
     )
+
     verctor_store.add_documents(docs)
 
 

@@ -3,7 +3,7 @@ import json
 from fastapi import Body, FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 
-from rag import enhance_resume
+from rag import enhance_resume, load_resumes_to_pinecone
 
 app = FastAPI()
 
@@ -18,21 +18,28 @@ class EditResponse(BaseModel):
     used_sources: list[UsedCoverLetter]
 
 
+class PublishCoverLetterMetadata(BaseModel):
+    id: str
+
+
 @app.post("/upload")
 async def upload_cover_letter(
     coverletter: UploadFile = File(...),
-    metadata: str = Form(..., description="JSON string metadata for the cover letter"),
+    metadata: str = Form(
+        ...,
+        description="JSON string metadata for the cover letter {id: <str>}",
+        example='{"id": "12345"}',
+    ),
 ):
     content = await coverletter.read()
     text = content.decode("utf-8")
 
     try:
-        metadata_dict = json.loads(metadata)
-        company = metadata_dict.get("company")
+        meta = PublishCoverLetterMetadata(**json.loads(metadata))
     except json.JSONDecodeError:
         return {"status": "error", "message": "Invalid metadata format"}
 
-    # load_resumes_to_pinecone(text, metadata={"company": company})
+    load_resumes_to_pinecone(text, metadata=meta.model_dump())
     return {"status": "success", "message": "Cover letter uploaded and embedded."}
 
 
