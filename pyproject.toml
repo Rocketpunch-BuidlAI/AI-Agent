@@ -1,0 +1,21 @@
+[project]
+name = "resume-rag-agent"
+version = "0.1.0"
+description = "AI Resume Enhancement Agent with LangChain and Pinecone"
+dependencies = [
+    "fastapi[standard]>=0.115.12",
+    "langchain>=0.3.23",
+    "langchain-community>=0.3.21",
+    "langchain-openai>=0.3.12",
+    "langchain-pinecone>=0.2.5",
+    "openai>=1.72.0",
+    "pinecone>=6.0.2",
+    "python-dotenv>=1.1.0",
+]
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I"]  # Enable basic style, format, import rules
+ignore = ["E501"]         # Example: ignore long line warning if needed
+exclude = ["resumes/"]

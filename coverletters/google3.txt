@@ -1,0 +1,13 @@
+Dear [Hiring Manager's Name],
+
+As a recent graduate in Computer Science from [University Name] with hands-on experience in full-stack development, I’m excited to apply for the Software Engineer position at [Company Name]. I’m passionate about building reliable, user-centered software and eager to grow within a mission-driven engineering team.
+
+During my capstone project, I led the development of a task management web app using React, Flask, and PostgreSQL. We deployed the app on AWS and presented it to a panel of industry engineers. I’ve also completed internships where I contributed to debugging backend services and writing integration tests for microservices.
+
+I admire [Company Name]’s focus on [innovation/user experience/product quality], and I’m confident I can bring enthusiasm, adaptability, and a solid technical foundation to your team.
+
+Thank you for considering my application. I’d welcome the opportunity to further demonstrate my fit for this role.
+
+Best regards,  
+[Your Full Name]  
+[Phone] • [Email] • [Portfolio or GitHub]
