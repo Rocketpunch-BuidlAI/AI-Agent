@@ -1,9 +1,10 @@
 import json
+from wsgiref import validate
 
 from fastapi import Body, FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 
-from rag import enhance_resume, load_resumes_to_pinecone
+from rag.rag import enhance_resume, load_coverletter
 
 app = FastAPI()
 
@@ -39,28 +40,18 @@ async def upload_cover_letter(
     except json.JSONDecodeError:
         return {"status": "error", "message": "Invalid metadata format"}
 
-    load_resumes_to_pinecone(text, metadata=meta.model_dump())
+    load_coverletter(text, metadata=meta.model_dump())
     return {"status": "success", "message": "Cover letter uploaded and embedded."}
 
 
-@app.post("/edit", response_model=EditResponse)
+@app.post("/edit")
 def enhance(
     original_cover_letter: UploadFile = File(..., description="Original cover letter from user"),
     metadata: str = Form(..., description="JSON string metadata for the cover letter"),
 ):
-    return {
-        "enhanced_cover_letter": "Enhanced cover letter content goes here.",
-        "used_sources": [
-            {
-                "id": "source_id",
-                "contributions": 60,
-            },
-            {
-                "id": "source_id",
-                "contributions": 40,
-            },
-        ],
-    }
+    return enhance_resume(
+        user_resume_text="",
+    )
 
 
 @app.get("/status")
