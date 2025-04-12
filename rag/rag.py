@@ -11,7 +11,7 @@ from rag.store import create_vector_store
 from rag.templates import enhance_prompt
 
 # Load keys
-load_dotenv(dotenv_path=".env.local")
+
 openai_key = os.getenv("OPENAI_API_KEY")
 llm = init_chat_model("gpt-4o")
 
@@ -24,7 +24,7 @@ def load_coverletter(
     documents = []
 
     documents.append(
-        Document(page_content=coverletter, metadata={"source": "user_coverletter", **metadata})
+        Document(page_content=coverletter, metadata={"source": metadata.get("id"), **metadata})
     )
 
     # Split and embed
@@ -43,7 +43,6 @@ def retrieve():
     retrieved_docs = vector_store.similarity_search(
         "Find coverletters from successful employees which are similar to the user coverletter",
         k=5,
-        filter={"company": "Google"},
     )
 
     return retrieved_docs
@@ -51,9 +50,11 @@ def retrieve():
 
 def generate(docs: List[Document], query: str):
     docs_content = "\n\n".join(
-        f"Source ID: {doc.metadata.get('source', 'unknown')}\nContent: {doc.page_content}"
+        f"Source ID: {doc.metadata.get('id', 'unknown')}\nContent: {doc.page_content}"
         for doc in docs
     )
+
+    print("Retrieved documents:", docs_content)
 
     messages = enhance_prompt.invoke(
         {

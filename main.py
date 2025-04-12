@@ -1,5 +1,9 @@
 import json
-from wsgiref import validate
+
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path=".env.local")
+
 
 from fastapi import Body, FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
@@ -33,14 +37,17 @@ async def upload_cover_letter(
     ),
 ):
     content = await coverletter.read()
-    text = content.decode("utf-8")
+    try:
+        text = content.decode("utf-8")
+    except UnicodeDecodeError as e:
+        return {"status": "error", "message": f"Failed to decode content: {str(e)}"}
 
     try:
         meta = PublishCoverLetterMetadata(**json.loads(metadata))
     except json.JSONDecodeError:
         return {"status": "error", "message": "Invalid metadata format"}
 
-    load_coverletter(text, metadata=meta.model_dump())
+    load_coverletter(coverletter=text, metadata=meta.model_dump())
     return {"status": "success", "message": "Cover letter uploaded and embedded."}
 
 

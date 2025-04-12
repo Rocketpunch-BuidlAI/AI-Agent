@@ -10,6 +10,7 @@ dependencies = [
     "langchain-pinecone>=0.2.5",
     "openai>=1.72.0",
     "pinecone>=6.0.2",
+    "pypdf2>=3.0.1",
     "python-dotenv>=1.1.0",
     "streamlit>=1.44.1",
 ]

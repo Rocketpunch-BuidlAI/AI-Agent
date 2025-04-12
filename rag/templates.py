@@ -61,5 +61,10 @@ enhance_prompt = PromptTemplate(
 	•	Long-Term Career Goals
 
 
-    Provide a rewritten version of the cover letter, and list the sources used for the enhancements.""",
+    Provide a rewritten version of the cover letter, and list the sources used for the enhancements.
+    The sources should include:
+    - Source ID
+    - Contribution percentage
+    The contribution percentages should add up to 100%.
+    """,
 )
