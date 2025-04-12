@@ -1,10 +1,9 @@
-from math import e
+from typing import List, Optional
 
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
-from typing import List, Optional
 
-from rag.rag import generate_cover_letter, load_coverletter
+from rag.rag import generate_cover_letter, load_coverletter, retrieve
 
 app = FastAPI()
 
@@ -79,9 +78,19 @@ def create(
         motivation=data.motivation,
         relevantExperience=data.relevantExperience,
         futureAspirations=data.futureAspirations,
-        metadata=data.metadata.dict() if data.metadata else {},
+        metadata=data.metadata.dict() if data.metadata else {},  # type: ignore
         prompt=data.customPrompt or "",
     )
+
+
+@app.post("/coverletters")
+def get_coverletter(
+    role: str = Body(
+        embed=True,
+    ),
+    experience: str = Body(),
+):
+    return retrieve(experience, role)
 
 
 @app.get("/status")

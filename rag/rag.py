@@ -6,6 +6,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from pydantic import BaseModel
 
+from rag.models import CoverLetterMetadata
 from rag.output import EditResponseFormatter
 from rag.store import create_vector_store
 from rag.templates import enhance_prompt
@@ -39,15 +40,19 @@ def load_coverletter(
     vector_store.add_documents(docs)
 
 
-def retrieve():
+def retrieve(experience: str, role: str):
     vector_store = create_vector_store()
 
     retrieved_docs = vector_store.similarity_search(
         "Find coverletters from successful employees which are similar to the user coverletter",
         k=5,
+        filter={"experience": experience, "role": role},
     )
 
-    return retrieved_docs
+    return [
+        RetrievedDocument(source_id=doc.metadata.get("source", "unknown"), content=doc.page_content)
+        for doc in retrieved_docs
+    ]
 
 
 class RetrievedDocument(BaseModel):
@@ -56,21 +61,16 @@ class RetrievedDocument(BaseModel):
 
 
 def generate(
-    docs: List[Document], 
-    selfIntroduction: str, 
-    motivation: str, 
-    relevantExperience: str, 
-    futureAspirations: str, 
-    metadata: str, 
-    prompt: str
+    docs: List[RetrievedDocument],
+    selfIntroduction: str,
+    motivation: str,
+    relevantExperience: str,
+    futureAspirations: str,
+    metadata: str,
+    prompt: str,
 ):
-    docs_content = [
-        RetrievedDocument(source_id=doc.metadata.get("id", "unknown"), content=doc.page_content)
-        for doc in docs
-    ]
-
     docs_content_str = "\n\n".join(
-        f"Source ID: {doc.source_id}\nContent: {doc.content}" for doc in docs_content
+        f"Source ID: {doc.source_id}\nContent: {doc.content}" for doc in docs
     )
 
     messages = enhance_prompt.invoke(
@@ -112,21 +112,22 @@ def merge_contributions(sources):
 
 
 def generate_cover_letter(
-    selfIntroduction: str, 
-    motivation: str, 
-    relevantExperience: str, 
-    futureAspirations: str, 
-    metadata: str, 
-    prompt: str
+    selfIntroduction: str,
+    motivation: str,
+    relevantExperience: str,
+    futureAspirations: str,
+    metadata: CoverLetterMetadata,
+    prompt: str,
 ):
-    docs = retrieve()
-    result = generate(docs=docs, 
-        selfIntroduction=selfIntroduction, 
-        motivation=motivation, 
-        relevantExperience=relevantExperience, 
-        futureAspirations=futureAspirations, 
-        metadata=metadata, 
-        prompt=prompt
+    docs = retrieve(metadata.experience, metadata.position)
+    result = generate(
+        docs=docs,
+        selfIntroduction=selfIntroduction,
+        motivation=motivation,
+        relevantExperience=relevantExperience,
+        futureAspirations=futureAspirations,
+        metadata=metadata.model_dump_json(),
+        prompt=prompt,
     )
 
     return result
