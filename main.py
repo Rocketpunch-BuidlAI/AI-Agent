@@ -83,9 +83,9 @@ def create(
         prompt=data.customPrompt or "",
     )
 
-    # sources의 id 필드가 174 미만인 항목을 제외
+    # sources의 id 필드가 178 미만인 항목을 제외
     if "sources" in result:
-        filtered_sources = [source for source in result["sources"] if int(source["id"]) >= 174]
+        filtered_sources = [source for source in result["sources"] if int(source["id"]) >= 178]
         result["sources"] = filtered_sources
     
     return result
