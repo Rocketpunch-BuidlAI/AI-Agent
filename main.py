@@ -1,4 +1,5 @@
-from typing import List, Optional
+from typing import Optional
+from math import e
 
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
@@ -73,7 +74,7 @@ async def upload_cover_letter(
 def create(
     data: CoverLetterData = Body(...),
 ):
-    return generate_cover_letter(
+    result = generate_cover_letter(
         selfIntroduction=data.selfIntroduction,
         motivation=data.motivation,
         relevantExperience=data.relevantExperience,
@@ -81,6 +82,13 @@ def create(
         metadata=data.metadata.dict() if data.metadata else {},  # type: ignore
         prompt=data.customPrompt or "",
     )
+    
+    # sources의 id 필드가 120보다 작은 것만 필터링
+    if "sources" in result:
+        filtered_sources = [source for source in result["sources"] if int(source["id"]) < 120]
+        result["sources"] = filtered_sources
+    
+    return result
 
 
 @app.post("/coverletters")
