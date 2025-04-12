@@ -15,6 +15,7 @@ if st.button("Create"):
 
     result = generate_cover_letter(
         text=info,
+        metadata=metadata,
         prompt=prompt,
     )
 

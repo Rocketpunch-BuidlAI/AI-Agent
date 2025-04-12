@@ -55,7 +55,15 @@ class RetrievedDocument(BaseModel):
     content: str
 
 
-def generate(docs: List[Document], text: str, prompt: str):
+def generate(
+    docs: List[Document], 
+    selfIntroduction: str, 
+    motivation: str, 
+    relevantExperience: str, 
+    futureAspirations: str, 
+    metadata: str, 
+    prompt: str
+):
     docs_content = [
         RetrievedDocument(source_id=doc.metadata.get("id", "unknown"), content=doc.page_content)
         for doc in docs
@@ -67,7 +75,11 @@ def generate(docs: List[Document], text: str, prompt: str):
 
     messages = enhance_prompt.invoke(
         {
-            "user_resume_text": text,
+            "user_resume_selfIntroduction": selfIntroduction,
+            "user_resume_motivation": motivation,
+            "user_resume_relevantExperience": relevantExperience,
+            "user_resume_futureAspirations": futureAspirations,
+            "user_metadata": metadata,
             "context": docs_content_str,
             "custom_prompt": prompt,
         }
@@ -99,8 +111,22 @@ def merge_contributions(sources):
     ]
 
 
-def generate_cover_letter(text: str, prompt: str):
+def generate_cover_letter(
+    selfIntroduction: str, 
+    motivation: str, 
+    relevantExperience: str, 
+    futureAspirations: str, 
+    metadata: str, 
+    prompt: str
+):
     docs = retrieve()
-    result = generate(docs=docs, text=text, prompt=prompt)
+    result = generate(docs=docs, 
+        selfIntroduction=selfIntroduction, 
+        motivation=motivation, 
+        relevantExperience=relevantExperience, 
+        futureAspirations=futureAspirations, 
+        metadata=metadata, 
+        prompt=prompt
+    )
 
     return result

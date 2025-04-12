@@ -2,6 +2,7 @@ from math import e
 
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
+from typing import List, Optional
 
 from rag.rag import generate_cover_letter, load_coverletter
 
@@ -25,6 +26,21 @@ class PublishCoverLetterMetadata(BaseModel):
 
 class CreateCoverLetterReq(BaseModel):
     text: str
+
+
+class Metadata(BaseModel):
+    targetCompany: str
+    department: str
+    position: str
+
+
+class CoverLetterData(BaseModel):
+    selfIntroduction: str
+    motivation: str
+    relevantExperience: str
+    futureAspirations: str
+    metadata: Optional[Metadata] = None
+    customPrompt: Optional[str] = None
 
 
 @app.post("/upload")
@@ -54,14 +70,15 @@ async def upload_cover_letter(
 
 @app.post("/edit")
 def create(
-    text: str = Body(
-        ...,
-        embed=True,
-    ),
+    data: CoverLetterData = Body(...),
 ):
     return generate_cover_letter(
-        text="",
-        prompt="",
+        selfIntroduction=data.selfIntroduction,
+        motivation=data.motivation,
+        relevantExperience=data.relevantExperience,
+        futureAspirations=data.futureAspirations,
+        metadata=data.metadata.dict() if data.metadata else {},
+        prompt=data.customPrompt or "",
     )
 
 
