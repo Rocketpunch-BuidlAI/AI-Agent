@@ -33,7 +33,7 @@ class Metadata(BaseModel):
     department: str
     position: str
     experience: str
-    skils: str
+    skills: str
 
 
 class CoverLetterData(BaseModel):
