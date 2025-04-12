@@ -15,18 +15,21 @@ openai_key = os.getenv("OPENAI_API_KEY")
 llm = init_chat_model("gpt-4o")
 
 
-# 1. Embed and Upload Resumes to Pinecone
 def load_coverletter(
     coverletter: str,
-    metadata: dict,
+    id: str,
+    role: str,
+    experience: str,
 ):
     documents = []
 
     documents.append(
-        Document(page_content=coverletter, metadata={"source": metadata.get("id"), **metadata})
+        Document(
+            page_content=coverletter,
+            metadata={"source": id, "role": role, "experience": experience},
+        )
     )
 
-    # Split and embed
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000, chunk_overlap=100, add_start_index=True
     )
@@ -96,7 +99,6 @@ def merge_contributions(sources):
     ]
 
 
-# 2. RAG Query with Source Attribution
 def generate_cover_letter(text: str, prompt: str):
     docs = retrieve()
     result = generate(docs=docs, text=text, prompt=prompt)

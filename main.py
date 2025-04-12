@@ -1,7 +1,8 @@
+from math import e
+
 from fastapi import Body, FastAPI
 from pydantic import BaseModel
 
-import rag.configs
 from rag.rag import generate_cover_letter, load_coverletter
 
 app = FastAPI()
@@ -36,8 +37,17 @@ async def upload_cover_letter(
         ...,
         embed=True,
     ),
+    role: str = Body(
+        ...,
+        embed=True,
+    ),
+    experience: str = Body(
+        ...,
+        embed=True,
+        example="junior, senior",
+    ),
 ):
-    load_coverletter(coverletter=text, metadata={"id": id})
+    load_coverletter(text, id, role, experience)
 
     return {"status": "success", "message": "Cover letter uploaded and embedded."}
 
