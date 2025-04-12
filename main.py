@@ -82,11 +82,6 @@ def create(
         metadata=data.metadata.dict() if data.metadata else {},  # type: ignore
         prompt=data.customPrompt or "",
     )
-
-    # sources의 id 필드가 178 이상이면서 192가 아닌 항목만 포함
-    if "sources" in result:
-        filtered_sources = [source for source in result["sources"] if int(source["id"]) >= 178 and int(source["id"]) != 192]
-        result["sources"] = filtered_sources
     
     return result
 
@@ -98,7 +93,15 @@ def get_coverletter(
     ),
     experience: str = Body(),
 ):
-    return retrieve(experience, role)
+    result = retrieve(experience, role)
+    
+    # source_id 필드가 178 이상이면서 192가 아닌 항목만 포함
+    if isinstance(result, list):
+        filtered_results = [doc for doc in result if hasattr(doc, 'source_id') and int(doc.source_id) >= 178 and int(doc.source_id) != 192]
+        return filtered_results
+    
+    # 다른 형식의 응답일 경우 원본 데이터를 그대로 반환
+    return result
 
 
 @app.get("/status")
