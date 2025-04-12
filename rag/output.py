@@ -9,7 +9,7 @@ class UsedCoverLetter(BaseModel):
 
 
 class EditResponseFormatter(BaseModel):
-    enhanced_cover_letter: str = Field(..., description="Enhanced cover letter content")
+    text: str = Field(..., description="Created Coverletter text, Do not include sources")
     used_sources: list[UsedCoverLetter] = Field(
         ..., description="List of used sources with contributions"
     )

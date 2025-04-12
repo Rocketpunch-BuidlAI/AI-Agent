@@ -1,17 +1,13 @@
-import os
 import time
 
 from langchain.embeddings import OpenAIEmbeddings
 from langchain_pinecone import PineconeVectorStore
 from pinecone import Pinecone, ServerlessSpec
 
-pinecone_key = os.getenv("PINECONE_API_KEY")
-
+from rag import configs
 
 # Initialize Pinecone
-pc = Pinecone(
-    api_key=pinecone_key,
-)
+pc = Pinecone(api_key=configs.configs.pinecone)
 
 index_name = "cv"
 

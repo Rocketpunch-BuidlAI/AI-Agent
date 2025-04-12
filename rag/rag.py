@@ -1,17 +1,16 @@
 import os
 from typing import List
 
-from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
+from pydantic import BaseModel
 
 from rag.output import EditResponseFormatter
 from rag.store import create_vector_store
 from rag.templates import enhance_prompt
 
 # Load keys
-
 openai_key = os.getenv("OPENAI_API_KEY")
 llm = init_chat_model("gpt-4o")
 
@@ -48,25 +47,52 @@ def retrieve():
     return retrieved_docs
 
 
-def generate(docs: List[Document], query: str):
-    docs_content = "\n\n".join(
-        f"Source ID: {doc.metadata.get('id', 'unknown')}\nContent: {doc.page_content}"
-        for doc in docs
-    )
+class RetrievedDocument(BaseModel):
+    source_id: str
+    content: str
 
-    print("Retrieved documents:", docs_content)
+
+def generate(docs: List[Document], query: str):
+    docs_content = [
+        RetrievedDocument(source_id=doc.metadata.get("id", "unknown"), content=doc.page_content)
+        for doc in docs
+    ]
+
+    docs_content_str = "\n\n".join(
+        f"Source ID: {doc.source_id}\nContent: {doc.content}" for doc in docs_content
+    )
 
     messages = enhance_prompt.invoke(
         {
             "user_resume_text": query,
-            "context": docs_content,
+            "context": docs_content_str,
         }
     )
 
     response = llm.with_structured_output(EditResponseFormatter).invoke(messages)
 
-    print("Response from LLM:", response)
-    return response
+    res = EditResponseFormatter.model_validate(response)
+
+    return {
+        "text": res.text,
+        "sources": merge_contributions(res.used_sources),
+    }
+
+
+def merge_contributions(sources):
+    merged = {}
+    for source in sources:
+        source_id = source.id
+        contributions = source.contributions
+        if source_id in merged:
+            merged[source_id] += contributions
+        else:
+            merged[source_id] = contributions
+
+    return [
+        {"id": source_id, "contributions": contributions}
+        for source_id, contributions in merged.items()
+    ]
 
 
 # 2. RAG Query with Source Attribution
