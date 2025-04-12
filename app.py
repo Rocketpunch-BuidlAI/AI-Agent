@@ -1,22 +1,22 @@
 import streamlit as st
 
-st.title("Cover Letter Enhancer")
-st.write("Upload your cover letter and get an enhanced version with suggestions for improvement.")
+from rag.rag import generate_cover_letter
 
-st.file_uploader(
-    "Upload your Cover Letter",
-    type=["txt", "pdf"],
-)
+info = st.text_area("Your Info")
 
-st.text_area(
-    "Extract Prompt",
+prompt = st.text_area(
+    "Prompt",
     placeholder="Paste your prompt",
     height=300,
 )
 
-if st.button("Enhance"):
-    st.write("Enhancing your cover letter...")
-    # Call the enhance function here with the uploaded file and prompt
-    # enhanced_cover_letter = enhance(original_cover_letter, prompt)
-    # st.text_area("Enhanced Cover Letter", value=enhanced_cover_letter, height=300)
-    st.write("Enhanced cover letter will be displayed here.")
+if st.button("Create"):
+    st.write("Create your cover letter...")
+
+    result = generate_cover_letter(
+        text=info,
+        prompt=prompt,
+    )
+
+    st.write("Cover letter will be displayed here.")
+    st.write(result)

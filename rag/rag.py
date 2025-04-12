@@ -52,7 +52,7 @@ class RetrievedDocument(BaseModel):
     content: str
 
 
-def generate(docs: List[Document], query: str):
+def generate(docs: List[Document], text: str, prompt: str):
     docs_content = [
         RetrievedDocument(source_id=doc.metadata.get("id", "unknown"), content=doc.page_content)
         for doc in docs
@@ -64,8 +64,9 @@ def generate(docs: List[Document], query: str):
 
     messages = enhance_prompt.invoke(
         {
-            "user_resume_text": query,
+            "user_resume_text": text,
             "context": docs_content_str,
+            "custom_prompt": prompt,
         }
     )
 
@@ -96,18 +97,8 @@ def merge_contributions(sources):
 
 
 # 2. RAG Query with Source Attribution
-def enhance_resume(user_resume_text):
-    query = """
-        
-        My name is John Doe, and I am a software engineer with a passion for developing innovative solutions. I have a strong background in computer science and have worked on various projects that showcase my skills in programming, problem-solving, and teamwork. I am excited about the opportunity to contribute to your organization and help drive success through technology.
-        I am particularly interested in the software engineering role at your company because of its commitment to innovation and excellence. I believe that my skills and experiences align well with the requirements of the position, and I am eager to bring my expertise to your team.
-        I have a strong foundation in software development, having worked on several projects that involved designing and implementing software solutions. I am proficient in multiple programming languages, including Python, Java, and C++. I have also gained experience in working with databases and cloud technologies, which I believe will be valuable in this role.
-        I am a quick learner and am always looking for opportunities to expand my knowledge and skills. I am particularly interested in learning more about cloud computing and machine learning, as I believe these areas will play a significant role in the future of software development.
-        I am excited about the possibility of joining your team and contributing to the development of cutting-edge software solutions. I am confident that my skills, experiences, and passion for technology make me a strong candidate for this role.
-        
-        """
-
+def generate_cover_letter(text: str, prompt: str):
     docs = retrieve()
-    result = generate(docs=docs, query=query)
+    result = generate(docs=docs, text=text, prompt=prompt)
 
     return result

@@ -2,7 +2,7 @@ from fastapi import Body, FastAPI
 from pydantic import BaseModel
 
 import rag.configs
-from rag.rag import enhance_resume, load_coverletter
+from rag.rag import generate_cover_letter, load_coverletter
 
 app = FastAPI()
 
@@ -49,8 +49,9 @@ def create(
         embed=True,
     ),
 ):
-    return enhance_resume(
-        user_resume_text="",
+    return generate_cover_letter(
+        text="",
+        prompt="",
     )
 
 

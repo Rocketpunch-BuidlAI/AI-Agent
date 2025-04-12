@@ -17,7 +17,7 @@ extract_metadata_prompt = PromptTemplate(
 
 
 enhance_prompt = PromptTemplate(
-    input_variables=["user_resume_text", "context"],
+    input_variables=["user_resume_text", "context", "custom prompt"],
     template="""
     You are a professional cover letter enhancer.
 
@@ -31,37 +31,12 @@ enhance_prompt = PromptTemplate(
     Use similar phrasing, highlight relevant skills, and make it ATS-friendly.
 
     The cover letter format should be:
-    
-    1. Self-Introduction
-	•	Major / Desired Job Role
-	•	Motivation for Developing Interest
-	•	Core Values
-	•	Personal Vision
-	•	Strengths and Weaknesses in Personality
-
-
-    2. Motivation for Application
-	•	Information About the Company/Organization
-	•	Reason for Interest
-	•	Specific Reason for Applying
-	•	Personal Strengths
-	•	Relevant Skills
-
-    3. Relevant Experience
-	•	Related Projects During School
-	•	Competitions or Contests
-	•	Extracurricular or Professional Activities Related to the Role
-	•	Actions Taken to Solve Problems During These Activities
-	•	Lessons Learned or Insights Gained
-
-
-    4. Aspirations and Goals After Joining
-	•	Career Development Goals Related to the Role
-	•	Areas Where You Wish to Contribute
-	•	Long-Term Career Goals
-
+    {custom_prompt} 
 
     Provide a rewritten version of the cover letter, and list the sources used for the enhancements.
+
+    Do not include the sources in the cover letter text.
+
     The sources should include:
     - Source ID
     - Contribution percentage
