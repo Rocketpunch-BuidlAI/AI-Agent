@@ -16,13 +16,17 @@ with st.form("cover_letter_form"):
 
     # 메타데이터 입력
     st.header("Metadata")
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         target_company = st.text_input("Target Company (목표 회사) - 선택사항")
     with col2:
         department = st.text_input("Department (부서) - 선택사항")
     with col3:
         position = st.text_input("Position (직무) - 선택사항")
+    with col4:
+        position = st.text_input("Experience (경력) - 선택사항")
+    with col5:
+        skills = st.text_input("Skills (기술) - 선택사항")
 
     # 커스텀 프롬프트 입력
     st.header("Additional Settings")
@@ -41,7 +45,9 @@ if submit_button:
         "metadata": {
             "targetCompany": target_company,
             "department": department,
-            "position": position
+            "position": position,
+            "experience": experience,
+            "skills": skills,
         },
         "customPrompt": custom_prompt
     }
@@ -49,7 +55,7 @@ if submit_button:
     try:
         # API 호출
         response = requests.post(
-            "http://localhost:8000/edit",
+            "http://localhost:3000/edit",
             json=request_data
         )
         

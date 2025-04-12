@@ -32,6 +32,8 @@ class Metadata(BaseModel):
     targetCompany: str
     department: str
     position: str
+    experience: str
+    skils: str
 
 
 class CoverLetterData(BaseModel):
